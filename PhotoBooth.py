@@ -1,7 +1,9 @@
 #!/user/bin/env python3
 
-#use sudo ln -sf /usr/bin/python3.4 /usr/bin/python
+#use "sudo ln -sf /usr/bin/python3.4 /usr/bin/python"
 #changing the default python
+
+#To run in console use "python3 PhotoBooth.py"
 
 import tweepy  
 from subprocess import call  
@@ -18,12 +20,19 @@ from PIL import Image, ImageTk
 def my_callback(channel):
     global pressed
     pressed = True
-def showPreview(): 
-    
-    root.title("Add a caption")
 
+#Summary: The method creates a window that previews the picture taken
+#with the ability to input a caption.
+def showPreview(): 
+    #Using tkinter for creating windows.
+    #root is created in the main program loop
+    root.title("Add a caption")
     mainframe = ttk.Frame(root, padding="3 3 12 12")
     root.update_idletasks()
+
+    #To prevent root window from appearing in random locations
+    #Grabbing the width and height of the current screen and finding
+    #rough middle of the screen location.
     w=mainframe.winfo_screenwidth()
     h=mainframe.winfo_screenheight()
     size = tuple(int(_) for _ in root.geometry().split('+')[0].split('x'))
@@ -31,30 +40,36 @@ def showPreview():
     y = h/2 - size[1]/2
     root.geometry("%dx%d+%d+%d" % (920, 580, x-100, y-100))
 
+    #Creating the frame inside the root window.
     mainframe.grid(column=0, row=0, sticky=(N,W,E,S))
     mainframe.columnconfigure(0, weight=1)
     mainframe.rowconfigure(0, weight=1)
 
-    #img = Image(file = filePath, imgtype = ".png")
+    #Image is handled by PIL
+    #Open taken from the main loop.
     img = Image.open(filePath)
-    img.thumbnail((800,600), Image.ANTIALIAS)
+    img.thumbnail((800,600), Image.ANTIALIAS)#Define the size of the preview image.
     newimg = ImageTk.PhotoImage(img)
     ttk.Label(mainframe, image = newimg).grid(column = 0, row = 1,sticky=W)
-    
+
+    #Input text box for adding a caption to the image.
     captionBox = ttk.Entry(mainframe, width=40, textvariable=caption)
     captionBox.grid(column=0, row=3, sticky=(W,E))
 
+    #Create tweet button and text box.
     ttk.Label(mainframe, text="Add a caption for the tweet!").grid(column=0, row=2, sticky=W)
     ttk.Button(root, text="Tweet", command = tweet).grid(column=3, row=3, sticky=W)
     for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
 
     captionBox.focus()
 
+    #Bind the enter key to allow same effect as clicking the button.
     root.bind('<Return>', tweet)
     root.protocol("WM_DELETE_WINDOW", onClose)
 
     root.mainloop()
-    
+
+#Method for proper cleanup.    
 def onClose():
     root.destroy()
     GPIO.cleanup()
@@ -83,16 +98,23 @@ def tweet(*args):
     root.destroy()
     print(caption.get())
     
+#------
+#Main
+#------
+
+#Bind the GPIO
 GPIO.setmode(GPIO.BCM)
 button1_pin = 18
 GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)    
 exit1 = False
+#Main loops to allow for continuous image taking.
 while not exit1:
     pressed = False
     fileName = 'pic2.jpg'
-    filePath = "/home/pi/Desktop/" + fileName
-    root = Tk()
-    caption = StringVar()
+    filePath = "/home/pi/Desktop/PhotoBooth/" + fileName
+    root = Tk()#Create root
+    caption = StringVar()#Define caption text to use in the root window.
+    #Start camera preview and wait for button press.
     with picamera.PiCamera() as camera:
         camera.resoution = (1920, 1080)
         camera.start_preview()
