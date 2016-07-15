@@ -14,6 +14,7 @@ from tkinter import *
 from tkinter import ttk
 import RPi.GPIO as GPIO
 from PIL import Image, ImageTk
+import urllib
 
 
 
@@ -38,7 +39,7 @@ def showPreview():
     size = tuple(int(_) for _ in root.geometry().split('+')[0].split('x'))
     x = w/2 - size[0]/2
     y = h/2 - size[1]/2
-    root.geometry("%dx%d+%d+%d" % (920, 580, x-100, y-100))
+    root.geometry("%dx%d+%d+%d" % (800, 480, 0, 0))
 
     #Creating the frame inside the root window.
     mainframe.grid(column=0, row=0, sticky=(N,W,E,S))
@@ -48,7 +49,7 @@ def showPreview():
     #Image is handled by PIL
     #Open taken from the main loop.
     img = Image.open(filePath)
-    img.thumbnail((800,600), Image.ANTIALIAS)#Define the size of the preview image.
+    img.thumbnail((500,300), Image.ANTIALIAS)#Define the size of the preview image.
     newimg = ImageTk.PhotoImage(img)
     ttk.Label(mainframe, image = newimg).grid(column = 0, row = 1,sticky=W)
 
@@ -75,7 +76,20 @@ def onClose():
     GPIO.cleanup()
     global exit1
     exit1 = True
+
+#Check internet connection
+def check_internet():
+    try:
+        urllib.request.urlopen('http://google.com')
+        return True
+    except:
+        return False
+    
 def tweet(*args):
+    if not check_internet():
+        messagebox.showerror('No internet', 'Check your internet connection.')
+        return
+        
     i = datetime.now()               #take time and date for filename  
     now = i.strftime('%Y%m%d-%H%M%S')
       
@@ -104,7 +118,7 @@ def tweet(*args):
 
 #Bind the GPIO
 GPIO.setmode(GPIO.BCM)
-button1_pin = 18
+button1_pin = 21
 GPIO.setup(button1_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)    
 exit1 = False
 #Main loops to allow for continuous image taking.
@@ -116,7 +130,7 @@ while not exit1:
     caption = StringVar()#Define caption text to use in the root window.
     #Start camera preview and wait for button press.
     with picamera.PiCamera() as camera:
-        camera.resoution = (1920, 1080)
+        #camera.resoution = (2592, 1944)
         camera.start_preview()
         GPIO.wait_for_edge(button1_pin, GPIO.FALLING, bouncetime = 500)
         camera.stop_preview();
