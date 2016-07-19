@@ -94,10 +94,10 @@ def tweet(*args):
     now = i.strftime('%Y%m%d-%H%M%S')
       
     # Consumer keys and access tokens, used for OAuth  
-    consumer_key = 'dtm5F7BJiX2QT57puB0BH1B4L'  
-    consumer_secret = 'hOakLciU75EmvTEnZyg1S3vhu9xKWlglBBRxrwSbjp9bezLu1K'  
-    access_token = '502556048-MCi4nOgMjwDg8TObzdmyZKYUhKLU4PHD7X9BFBnJ'  
-    access_token_secret = 'E5wIw3Av3XlOKwPIn4jKlLJIuLx5OYEmSb4mEiZYk5Al0'  
+    consumer_key = 'insert_here'  
+    consumer_secret = 'insert_here'  
+    access_token = 'insert_here'  
+    access_token_secret = 'insert_here'  
       
     # OAuth process, using the keys and tokens  
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)  
