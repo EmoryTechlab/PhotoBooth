@@ -89,15 +89,21 @@ def tweet(*args):
     if not check_internet():
         messagebox.showerror('No internet', 'Check your internet connection.')
         return
+    tokenarray = {}
+    with open("AuthTokens.txt", "r") as file:
+        for line in file:
+            key, value = line.split()
+            tokenarray[key] = value
+
         
     i = datetime.now()               #take time and date for filename  
     now = i.strftime('%Y%m%d-%H%M%S')
       
     # Consumer keys and access tokens, used for OAuth  
-    consumer_key = 'insert_here'  
-    consumer_secret = 'insert_here'  
-    access_token = 'insert_here'  
-    access_token_secret = 'insert_here'  
+    consumer_key = tokenarray["consumer_key"]
+    consumer_secret = tokenarray{"consumer_secret"]
+    access_token = tokenarray["access_token"]
+    access_token_secret = tokenarray["access_token_secret"]
       
     # OAuth process, using the keys and tokens  
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)  
