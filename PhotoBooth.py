@@ -66,6 +66,7 @@ def showPreview():
 
     #Bind the enter key to allow same effect as clicking the button.
     root.bind('<Return>', tweet)
+    root.bind('<Escape>', onEscape)
     root.protocol("WM_DELETE_WINDOW", onClose)
 
     root.mainloop()
@@ -76,6 +77,10 @@ def onClose():
     GPIO.cleanup()
     global exit1
     exit1 = True
+
+#Escape and reloop
+def onEscape(*args):
+    root.destroy()
 
 #Check internet connection
 def check_internet():
@@ -102,7 +107,7 @@ def tweet(*args):
       
     # Consumer keys and access tokens, used for OAuth  
     consumer_key = tokenarray["consumer_key"]
-    consumer_secret = tokenarray{"consumer_secret"]
+    consumer_secret = tokenarray["consumer_secret"]
     access_token = tokenarray["access_token"]
     access_token_secret = tokenarray["access_token_secret"]
       
@@ -139,7 +144,10 @@ while not exit1:
     with picamera.PiCamera() as camera:
         #camera.resoution = (2592, 1944)
         camera.start_preview()
-        GPIO.wait_for_edge(button1_pin, GPIO.FALLING, bouncetime = 500)
+        try:
+            GPIO.wait_for_edge(button1_pin, GPIO.FALLING, bouncetime = 500)
+        except KeyboardInterupt:
+            onClose()
         camera.stop_preview();
         camera.capture(fileName)
         showPreview()
